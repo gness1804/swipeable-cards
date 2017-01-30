@@ -19,7 +19,7 @@ html, body {
 }
 
 .card {
-  background: #FFF;
+  background: papayawhip;
   border-radius: 3px;
   box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
   margin: 20px 0;
@@ -27,5 +27,4 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-around;
-
 }

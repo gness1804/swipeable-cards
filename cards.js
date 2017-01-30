@@ -24,6 +24,11 @@ class Cards {
     document.addEventListener('touchstart', this.onStart);
     document.addEventListener('touchmove', this.onMove);
     document.addEventListener('touchend', this.onEnd);
+
+    document.addEventListener('mousedown', this.onStart);
+    document.addEventListener('mousemove', this.onMove);
+    document.addEventListener('mouseup', this.onEnd);
+
   }
 
   onStart(e){
@@ -90,14 +95,56 @@ class Cards {
     this.target.style.transform = `translateX(${this.screenX}px)`;
     this.target.style.opacity = opacity;
 
+    const isNearlyAtStart = (Math.abs(this.screenX) < 0.01);
     const isNearlyInvisible = (opacity < 0.01)
 
     if (!this.draggingCard ) {
       if (isNearlyInvisible) {
-        this.target.parentNode.removeChild(this.target);
+
+        if (!this.target || !this.target.parentNode)
+          return;
+
+        let isAfterCurrentTarget = false;
+
+        const onTransitionEnd = e => {
+          this.target = null;
+          e.target.style.transition = 'none';
+          e.target.removeEventListener('transitionend', onTransitionEnd);
+
+        }
+
+        for (let i = 0; i < this.cards.length; i++) {
+          const card = this.cards[i];
+
+          if (card === this.target) {
+            isAfterCurrentTarget = true;
+            continue;
+          }
+
+          if (!isAfterCurrentTarget) {
+            continue;
+          }
+
+        card.style.transform = `translateY(${this.targetBCR.height}px)`
+        requestAnimationFrame(_ => {
+          card.style.transition = 'transform 0.15s cubic-bezier(0, 0, 0.31, 1)';
+          card.style.transform = 'none';
+        });
+
+        card.addEventListener('transitionend', onTransitionEnd);
+      };
+
+      this.target.parentNode.removeChild(this.target);
+      }
+
+      if (isNearlyAtStart) {
+        this.target.style.willChange = 'initial';
+        this.target.style.transform = 'none';
         this.target = null;
       }
+
     }
+
   }
 
 }
